@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doçuras da Nayara &amp; Rozy cakes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #fcf9f7; }
+        .font-fancy { font-family: 'Great Vibes', cursive; }
+        .header-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 0, 0, 0.58)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .cart-modal,
+        .builder-modal,
+        .popup-closed {
+            display: none;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(6px);
+        }
+        .cart-modal.active,
+        .builder-modal.active,
+        .popup-closed.active { display: flex; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .mini-scroll { scrollbar-width: none; }
+        textarea { resize: none; }
+        .selector-card.active {
+            border-color: rgb(190 24 93);
+            background: rgb(253 242 248);
+            color: rgb(157 23 77);
+            box-shadow: 0 12px 30px -22px rgba(190, 24, 93, 0.9);
+        }
+        .selector-card.disabled,
+        .choice-banner.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .choice-banner {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.25rem;
+            border: 1px solid rgb(244 114 182 / 0.22);
+            min-height: 108px;
+            background-size: cover;
+            background-position: center;
+            transition: all 0.2s ease;
+        }
+        .choice-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.76));
+        }
+        .choice-banner-content {
+            position: relative;
+            z-index: 1;
+        }
+        .choice-banner.active {
+            box-shadow: 0 12px 30px -18px rgba(190, 24, 93, 0.9);
+            transform: translateY(-2px);
+            border-color: rgb(190 24 93);
+        }
+    </style>
+</head>
+<body class="pb-32 text-gray-800">
+
+    <div id="popup-fechado" class="popup-closed fixed inset-0 z-[100] items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm text-center shadow-2xl w-full">
+            <div class="text-5xl mb-4">⏰</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Loja Fechada Agora</h2>
+            <p class="text-gray-500 text-sm mb-6">Nosso atendimento funciona de segunda a sexta, das 10h às 15h. No momento, estamos recebendo somente pedidos agendados para o próximo horário de atendimento.</p>
+            <button onclick="ativarAgendamento()" class="w-full bg-pink-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-pink-200">Agendar meu pedido</button>
+        </div>
+    </div>
+
+    <header class="header-bg text-white pt-20 pb-16 px-4 text-center shadow-2xl">
+        <div class="max-w-xl mx-auto">
+            <h1 class="text-pink-300 font-fancy text-5xl md:text-6xl drop-shadow-lg">Doçuras da Nayara</h1>
+            <div class="my-2 text-white/50 font-light tracking-[0.5em]">&amp;</div>
+            <h1 class="text-white font-fancy text-5xl md:text-6xl drop-shadow-lg leading-tight">Rozy cakes</h1>
+            <div id="status-loja" class="mt-8 inline-block px-6 py-2 rounded-full border border-white/20 text-xs font-bold uppercase tracking-widest bg-green-500/20">Verificando horário...</div>
+            <p id="resumo-status" class="text-white/80 text-sm mt-4 max-w-md mx-auto"></p>
+        </div>
+    </header>
+
+    <nav class="sticky top-0 bg-[#fcf9f7]/90 backdrop-blur-md z-30 p-4 border-b border-pink-100">
+        <div class="flex overflow-x-auto gap-3 no-scrollbar max-w-md mx-auto">
+            <button id="btn-almoco" onclick="alternarCategoria('almoco')" class="bg-pink-700 text-white whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold shadow-lg transition-all">Menu de Hoje</button>
+            <button id="btn-bebidas" onclick="alternarCategoria('bebidas')" class="bg-white text-gray-400 border border-gray-100 whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold transition-all">Bebidas</button>
+            <button id="btn-sobremesas" onclick="alternarCategoria('sobremesas')" class="bg-white text-gray-400 border border-gray-100 whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold transition-all">Sobremesas</button>
+        </div>
+    </nav>
+
+    <main class="p-4 max-w-md mx-auto">
+        <div class="mb-6">
+            <h3 id="titulo-secao" class="text-gray-800 font-bold text-xl uppercase tracking-tight">Especial de Hoje</h3>
+            <p id="subtitulo-secao" class="text-pink-600 text-xs font-medium italic"></p>
+        </div>
+        <div id="lista-produtos" class="space-y-6"></div>
+    </main>
+
+    <div id="cart-bar" class="fixed bottom-6 left-4 right-4 bg-gray-900 text-white p-5 rounded-3xl flex justify-between items-center shadow-2xl hidden z-40 border border-white/10">
+        <div class="flex items-center gap-3">
+            <div class="bg-pink-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold" id="cart-count">0</div>
+            <div>
+                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Total do pedido</p>
+                <p class="font-bold text-lg" id="cart-total-bar">R$ 0,00</p>
+            </div>
+        </div>
+        <button onclick="toggleCart()" class="bg-white text-black px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-wider">Ver Sacola</button>
+    </div>
+
+    <div id="cart-modal" class="cart-modal fixed inset-0 z-50 items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-[3rem] sm:rounded-[3rem] p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900">Minha Sacola</h2>
+                    <p class="text-xs text-gray-400 mt-1">Revise seus itens e aproveite as sugestões para deixar seu pedido ainda mais completo.</p>
+                </div>
+                <button onclick="toggleCart()" class="text-gray-300 text-xl leading-none">×</button>
+            </div>
+
+            <div id="cart-items" class="space-y-4 mb-6"></div>
+
+            <div class="bg-pink-50 rounded-2xl p-4 mb-6">
+                <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">R$ 0,00</span>
+                </div>
+                <div class="flex items-center justify-between text-sm text-emerald-600 mb-2 font-semibold">
+                    <span>Descontos</span>
+                    <span id="cart-discount">- R$ 0,00</span>
+                </div>
+                <div class="flex items-center justify-between font-black text-gray-900 text-base border-t border-pink-100 pt-3 mt-3">
+                    <span>Total</span>
+                    <span id="cart-total-modal">R$ 0,00</span>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div>
+                        <h3 class="text-base font-black text-gray-900">Que tal um doce para finalizar?</h3>
+                        <p class="text-[11px] text-gray-400">Escolhas rápidas e irresistíveis para fechar seu pedido com mais prazer.</p>
+                    </div>
+                </div>
+                <div id="cart-suggestions" class="flex gap-3 overflow-x-auto mini-scroll pb-1"></div>
+            </div>
+
+            <div class="space-y-4 mb-8 text-sm">
+                <input type="text" id="nome" placeholder="Seu nome" class="w-full bg-gray-50 border-none p-4 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none">
+                <input type="text" id="endereco" placeholder="Endereço de entrega" class="w-full bg-gray-50 border-none p-4 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none">
+                <select id="pagamento" class="w-full bg-gray-50 border-none p-4 rounded-2xl outline-none">
+                    <option value="PIX">PIX</option>
+                    <option value="Cartão na entrega">Cartão na entrega</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+            </div>
+
+            <button onclick="enviarPedido()" class="w-full bg-pink-700 text-white font-bold py-5 rounded-2xl shadow-xl active:scale-95 transition-all mb-4">Finalizar no WhatsApp</button>
+            <button onclick="toggleCart()" class="w-full text-gray-400 text-sm font-medium pb-2">Continuar escolhendo</button>
+        </div>
+    </div>
+
+    <div id="builder-modal" class="builder-modal fixed inset-0 z-[60] items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-[3rem] sm:rounded-[3rem] p-8 shadow-2xl max-h-[92vh] overflow-y-auto">
+            <div class="flex items-start justify-between gap-4 mb-6">
+                <div>
+                    <p class="text-[10px] uppercase tracking-[0.25em] text-pink-500 font-bold">Personalize seu pedido</p>
+                    <h2 id="builder-title" class="text-2xl font-black text-gray-900 mt-2">Escolha seu item</h2>
+                    <p id="builder-subtitle" class="text-xs text-gray-400 mt-2"></p>
+                </div>
+                <button onclick="fecharBuilder()" class="text-gray-300 text-xl leading-none">×</button>
+            </div>
+
+            <div id="builder-hero-wrapper" class="hidden mb-6">
+                <div id="builder-hero" class="h-40 rounded-[1.75rem] bg-cover bg-center border border-pink-50 shadow-sm"></div>
+            </div>
+
+            <div class="space-y-6">
+                <div id="builder-fixed-wrapper" class="hidden bg-gray-50 rounded-2xl p-4">
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-pink-500 font-bold mb-2">Proteína do combo</p>
+                    <div id="builder-fixed-content"></div>
+                </div>
+
+                <div id="builder-sizes-wrapper">
+                    <p class="text-sm font-bold text-gray-800 mb-3">1. Tamanho</p>
+                    <div id="builder-sizes" class="grid grid-cols-2 gap-3"></div>
+                </div>
+
+                <div id="builder-sides-wrapper" class="hidden">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <p id="builder-side-title" class="text-sm font-bold text-gray-800">2. Acompanhamentos</p>
+                        <span id="builder-side-help" class="text-[11px] text-pink-600 font-semibold"></span>
+                    </div>
+                    <div id="builder-sides" class="space-y-3"></div>
+                </div>
+
+                <div id="builder-proteins-wrapper" class="hidden">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <p id="builder-protein-title" class="text-sm font-bold text-gray-800">3. Proteínas</p>
+                        <span id="builder-protein-help" class="text-[11px] text-pink-600 font-semibold"></span>
+                    </div>
+                    <div id="builder-proteins" class="space-y-3"></div>
+                </div>
+
+                <div id="builder-drinks-wrapper" class="hidden">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <p class="text-sm font-bold text-gray-800">4. Escolha a bebida do combo</p>
+                        <span class="text-[11px] text-pink-600 font-semibold">Obrigatório</span>
+                    </div>
+                    <div id="builder-drinks" class="space-y-3"></div>
+                </div>
+
+                <div id="builder-options-wrapper" class="hidden">
+                    <p class="text-sm font-bold text-gray-800 mb-3">2. Opção</p>
+                    <div id="builder-options" class="space-y-3"></div>
+                </div>
+
+                <div>
+                    <p class="text-sm font-bold text-gray-800 mb-3">Observações</p>
+                    <textarea id="builder-notes" rows="3" placeholder="Ex.: retirar cebola, sem salada, pouco molho..." class="w-full bg-gray-50 border-none p-4 rounded-2xl focus:ring-2 focus:ring-pink-500 outline-none"></textarea>
+                </div>
+
+                <div class="bg-pink-50 rounded-2xl p-4">
+                    <div class="flex items-center justify-between gap-3 text-sm">
+                        <span class="text-gray-500 font-medium">Valor do item</span>
+                        <span id="builder-price" class="text-pink-700 font-black text-lg">R$ 0,00</span>
+                    </div>
+                    <p id="builder-price-help" class="text-[11px] text-gray-400 mt-2"></p>
+                </div>
+
+                <button id="builder-submit" onclick="confirmarBuilder()" class="w-full bg-pink-700 text-white font-bold py-4 rounded-2xl shadow-xl active:scale-95 transition-all">Adicionar à sacola</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FONE_WHATSAPP = '5575988533850';
+        const SIZES = {
+            P: { label: 'P', price: 20 },
+            M: { label: 'M', price: 25 },
+            G: { label: 'G', price: 28 },
+            GG: { label: 'GG', price: 32 }
+        };
+
+        const NO_SIDE = { name: 'Sem acompanhamento', img: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=900&fit=crop' };
+        const NO_PROTEIN = { name: 'Sem proteína', img: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=900&fit=crop' };
+
+        // Integração total dos recursos visuais e divisão do Feijão
+        const accompanimentImages = {
+            arroz: 'https://i.postimg.cc/43NJdM6L/arroz.png',
+            feijao_tropeiro: 'https://i.postimg.cc/7h3tQjwt/Feijao-tropeiro.png',
+            feijao_caldo: 'https://i.postimg.cc/rs1ZY7Mh/feijao-de-caldo.png',
+            macarrao: 'https://i.postimg.cc/Xv7VJhK3/macarrao.png',
+            farofa: 'https://i.postimg.cc/FKWhJZpB/farofa.png',
+            farofa_bacon: 'https://i.postimg.cc/FKWhJZpB/farofa.png', 
+            salada_verde: 'https://i.postimg.cc/wxJd6gKz/salada.png',
+            banana_frita: 'https://i.postimg.cc/mrXTFwVL/banana-frita.png',
+            salada_vinagrete: 'https://i.postimg.cc/wxJd6gKz/salada.png',
+            farofa_cenoura: 'https://i.postimg.cc/jqZFN4W1/farofa-de-cenoura.png',
+            salada_verduras: 'https://i.postimg.cc/x8xp29DC/salada-de-verduras.png',
+            pure_batata: 'https://i.postimg.cc/XNQzFkZz/pure-de-batata.png',
+            quiabada: 'https://i.postimg.cc/7PmW7nC9/quiabada.png',
+            salada_repolho: 'https://i.postimg.cc/6qjbXBJX/salada-de-repolho-florida.png',
+            caruru: 'https://i.postimg.cc/DZcYxqxd/caruru.png',
+            vatapa: 'https://i.postimg.cc/W37f5M5G/vatapa.png',
+            salada: 'https://i.postimg.cc/tTvGY4qH/salada-do-pirao-de-aipim.png', 
+            feijoada: 'https://i.postimg.cc/85bnZhZd/feijoada.png',
+            batata_palha: 'https://i.postimg.cc/XqX38yH2/batata-palha.png',
+            molho_barbecue: 'https://i.postimg.cc/VLdL922Y/molho-babebue.png'
+        };
+
+        const weeklyMenu = {
+            1: {
+                dia: 'Segunda-feira',
+                subtitulo: 'Sabores que lembram comida feita com capricho, com acompanhamentos completos e carnes suculentas para transformar o almoço em um momento especial.',
+                accompaniments: [
+                    { name: 'Arroz', img: accompanimentImages.arroz },
+                    { name: 'Feijão tropeiro', img: accompanimentImages.feijao_tropeiro },
+                    { name: 'Feijão de caldo', img: accompanimentImages.feijao_caldo },
+                    { name: 'Macarrão', img: accompanimentImages.macarrao },
+                    { name: 'Farofa', img: accompanimentImages.farofa },
+                    { name: 'Salada verde', img: accompanimentImages.salada_verde },
+                    { name: 'Banana frita', img: accompanimentImages.banana_frita }
+                ],
+                proteins: [
+                    { name: 'Bisteca', img: 'https://i.postimg.cc/C1Tf9wTH/bisteca-bovina.png', comboImg: 'https://i.postimg.cc/Y9CwrWHS/combo-bisteca-bovina-segunda.png' },
+                    { name: 'Carne de panela', img: 'https://i.postimg.cc/2863c1bP/carne-de-panela.png', comboImg: 'https://i.postimg.cc/HxkCYyC6/combo-carne-de-panela-segunda.png' }
+                ],
+                lunchName: 'Marmita de Segunda'
+            },
+            2: {
+                dia: 'Terça-feira',
+                subtitulo: 'Uma combinação pensada para quem quer almoço farto, sabor marcante e aquela sensação de comida de verdade em cada garfada.',
+                accompaniments: [
+                    { name: 'Arroz', img: accompanimentImages.arroz },
+                    { name: 'Feijão tropeiro', img: accompanimentImages.feijao_tropeiro },
+                    { name: 'Feijão de caldo', img: accompanimentImages.feijao_caldo },
+                    { name: 'Macarrão', img: accompanimentImages.macarrao },
+                    { name: 'Farofa de bacon', img: accompanimentImages.farofa_bacon },
+                    { name: 'Salada de vinagrete', img: accompanimentImages.salada_vinagrete }
+                ],
+                proteins: [
+                    { name: 'Churrasco', img: 'https://i.postimg.cc/tJ3vm8pS/churrasco-terca.png', comboImg: 'https://i.postimg.cc/J06YLRVs/combo-churrasco-terca.png' },
+                    { name: 'Peixe frito', img: 'https://i.postimg.cc/qBj5nxh4/Peixe-frito-terca.png', comboImg: 'https://i.postimg.cc/nV0P7Gsv/Combo-peixe-frito-terca.png' }
+                ],
+                lunchName: 'Marmita de Terça'
+            },
+            3: {
+                dia: 'Quarta-feira',
+                subtitulo: 'Um cardápio generoso, colorido e cheio de textura para quem valoriza variedade, cremosidade e muito sabor no prato.',
+                accompaniments: [
+                    { name: 'Arroz', img: accompanimentImages.arroz },
+                    { name: 'Feijão tropeiro', img: accompanimentImages.feijao_tropeiro },
+                    { name: 'Feijão de caldo', img: accompanimentImages.feijao_caldo },
+                    { name: 'Macarrão', img: accompanimentImages.macarrao },
+                    { name: 'Farofa de cenoura', img: accompanimentImages.farofa_cenoura },
+                    { name: 'Salada de verduras', img: accompanimentImages.salada_verduras },
+                    { name: 'Purê de batata', img: accompanimentImages.pure_batata },
+                    { name: 'Quiabada completa', img: accompanimentImages.quiabada }
+                ],
+                proteins: [
+                    { name: 'Panqueca de carne', img: 'https://i.postimg.cc/gcNTRHXb/panqueca-de-carne-quarta.png', comboImg: 'https://i.postimg.cc/0jWXs9Ry/combo-panqueca-de-carne-quarta.png' },
+                    { name: 'Filé de frango à parmegiana', img: 'https://i.postimg.cc/v83N9tgR/file-de-frango-a-parmegiana-quarta.png', comboImg: 'https://i.postimg.cc/vTq2sGF8/combo-file-de-frango-a-parmegiana-quarta.png' }
+                ],
+                lunchName: 'Marmita de Quarta'
+            },
+            4: {
+                dia: 'Quinta-feira',
+                subtitulo: 'Perfeita para quem procura um almoço completo, equilibrado e visualmente apetitoso, com acompanhamentos que valorizam cada proteína.',
+                accompaniments: [
+                    { name: 'Arroz', img: accompanimentImages.arroz },
+                    { name: 'Feijão tropeiro', img: accompanimentImages.feijao_tropeiro },
+                    { name: 'Feijão de caldo', img: accompanimentImages.feijao_caldo },
+                    { name: 'Macarrão', img: accompanimentImages.macarrao },
+                    { name: 'Farofa', img: accompanimentImages.farofa },
+                    { name: 'Salada de repolho florida', img: accompanimentImages.salada_repolho },
+                    { name: 'Banana frita', img: accompanimentImages.banana_frita }
+                ],
+                proteins: [
+                    { name: 'Estrogonofe de carne', img: 'https://i.postimg.cc/6qjbXBJs/estrogonoff-de-carne.png', comboImg: 'https://i.postimg.cc/kG1Ym73J/combo-estrogonofe-de-carne-quinta.png' },
+                    { name: 'Executivo de frango', img: 'https://i.postimg.cc/1XC7Qyhh/executivo-de-frango-quinta.png', comboImg: 'https://i.postimg.cc/WzWYvsLs/combo-executivo-de-frango-quinta.png' },
+                    { name: 'Maminha', img: 'https://i.postimg.cc/908ghc5H/maminha-quuinta.png', comboImg: 'https://i.postimg.cc/L5CQpmK2/combo-maminha-quinta.png' }
+                ],
+                lunchName: 'Marmita de Quinta'
+            },
+            5: {
+                dia: 'Sexta-feira',
+                subtitulo: 'Sexta é dia de sabor intenso, cremosidade e pratos marcantes para quem quer fechar a semana com um almoço memorável.',
+                accompaniments: [
+                    { name: 'Caruru', img: accompanimentImages.caruru },
+                    { name: 'Vatapá', img: accompanimentImages.vatapa },
+                    { name: 'Arroz', img: accompanimentImages.arroz },
+                    { name: 'Salada', img: accompanimentImages.salada },
+                    { name: 'Feijoada', img: accompanimentImages.feijoada }
+                ],
+                proteins: [
+                    { name: 'Moqueca de peixe', img: 'https://i.postimg.cc/rsFZ3Kb2/moqueca-de-peixe-sexta.png', comboImg: 'https://i.postimg.cc/Kjqp2mXC/combo-moqueca-de-peixe-sexta.png' },
+                    { name: 'Xinxim de frango', img: 'https://i.postimg.cc/gjktQn71/xinxim-de-frango-sexta.png', comboImg: 'https://i.postimg.cc/PJrV9P7B/combo-xinxim-de-frango.png' },
+                    { name: 'Frango assado', img: 'https://i.postimg.cc/d3tNpLf4/frango-assado-sexta.png', comboImg: 'https://i.postimg.cc/ZnKs2CQ7/combo-frango-assado-sexta.png' },
+                    { name: 'Bobó de camarão', img: 'https://i.postimg.cc/PJrV9P7M/bobo-de-camarao-sexta.png', comboImg: 'https://i.postimg.cc/PxMFSmS1/combo-bobo-de-camarao.png' }
+                ],
+                lunchName: 'Marmita de Sexta'
+            }
+        };
+
+        const piraoConfig = {
+            accompaniments: [
+                { name: 'Salada', img: accompanimentImages.salada },
+                { name: 'Batata palha', img: accompanimentImages.batata_palha },
+                { name: 'Molho barbecue', img: accompanimentImages.molho_barbecue }
+            ],
+            proteins: [
+                { name: 'Calabresa', img: 'https://i.postimg.cc/c6q7mf1Z/calabresa-do-pirao-de-aipim.png' },
+                { name: 'Frango', img: 'https://i.postimg.cc/rm1tk7MS/frango-do-pirao-de-aipim.png' },
+                { name: 'Camarão', img: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=900&fit=crop' } 
+            ]
+        };
+
+        const fixedLunchItems = [
+            {
+                id: 'marmita-dia',
+                type: 'marmita',
+                nome: 'Marmita do Dia',
+                desc: 'Um almoço completo, montado do seu jeito, com acompanhamentos apetitosos e proteínas cheias de sabor para transformar sua refeição em algo realmente satisfatório.',
+                img: 'https://i.postimg.cc/nr49nBk2/Monte-do-seu-jeito-Segunda.jpg',
+                badge: 'Monte do seu jeito'
+            },
+            {
+                id: 'lasanha-casa',
+                type: 'size_only',
+                nome: 'Lasanha à Bolonhesa',
+                desc: 'Camadas generosas, molho bem temperado, muito recheio e queijo derretendo em cada garfada: uma escolha segura para quem quer sabor e conforto no mesmo prato.',
+                img: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=900&fit=crop', 
+                badge: 'Destaque'
+            },
+            {
+                id: 'pirao-casa',
+                type: 'combo_custom',
+                nome: 'Pirão de Aipim',
+                desc: 'Cremoso, bem servido e cheio de personalidade, o pirão permite combinações irresistíveis para quem quer um prato marcante, saboroso e caprichado.',
+                img: 'https://i.postimg.cc/sxWHsjvX/pirao-de-aipim.png',
+                badge: 'Mais pedido'
+            }
+        ];
+
+        const drinks = [
+            { id: 101, type: 'simple', nome: 'Suco de Laranja na Hora 500ml', preco: 7, img: 'https://i.postimg.cc/FRkXkQ7x/suco-de-laranja-com-cenoura.png' }, 
+            { id: 102, type: 'simple', nome: 'Suco de Laranja com Cenoura 500ml', preco: 8, img: 'https://i.postimg.cc/FRkXkQ7x/suco-de-laranja-com-cenoura.png' },
+            { id: 103, type: 'simple', nome: 'Suco de Limão e Beterraba 500ml', preco: 10, img: 'https://i.postimg.cc/sgm6V0DV/suco-de-limao-com-beterraba.png' },
+            { id: 104, type: 'simple', nome: 'Detox de Limão 500ml', preco: 13, img: 'https://i.postimg.cc/7hQzs0qQ/detox-de-limao.png' },
+            { id: 105, type: 'simple', nome: 'Detox de Limão com Gengibre e Hortelã 500ml', preco: 15, img: 'https://i.postimg.cc/kGhS1K7H/detox-de-limao-com-gengibre-e-hortela.png' },
+            { id: 106, type: 'simple', nome: 'Suco de Maracujá 500ml', preco: 8, img: 'https://i.postimg.cc/ncSzmnzx/Suco-de-maracuja.png' }, 
+            { id: 107, type: 'simple', nome: 'Água Tônica 350ml', preco: 6, img: 'https://i.postimg.cc/dtRGFPHn/agua-tonica.png' },
+            { id: 108, type: 'simple', nome: 'Coca-Cola 1L', preco: 8, img: 'https://i.postimg.cc/T1MW8Crp/coca-cola-1L.png' },
+            { id: 109, type: 'simple', nome: 'Pepsi 1L', preco: 7, img: 'https://i.postimg.cc/C1ff6WnJ/Pepsi-1L.png' },
+            { id: 110, type: 'simple', nome: 'Antártica 1L', preco: 7, img: 'https://i.postimg.cc/fbydY3z3/guarana-1L.png' },
+            { id: 111, type: 'simple', nome: 'Juninho Pepsi 200ml', preco: 2.5, img: 'https://i.postimg.cc/HWyQS7Q8/juninho-pepsi.png' },
+            { id: 112, type: 'simple', nome: 'Juninho Limão 200ml', preco: 2.5, img: 'https://i.postimg.cc/wxmhWsDS/juninho-limao.png' },
+            { id: 113, type: 'simple', nome: 'Juninho Guaraná 200ml', preco: 2.5, img: 'https://i.postimg.cc/k4VxP2zy/juninho-guarana.png' },
+            { id: 114, type: 'simple', nome: 'Tubaína Tutti Frutti 300ml', preco: 3, img: 'https://i.postimg.cc/XNRg3gVJ/tubaina.png' },
+            { id: 115, type: 'simple', nome: 'Suco de Caixinha 200ml', preco: 3, desc: 'Consulte os sabores disponíveis no WhatsApp ao finalizar o pedido.', img: 'https://i.postimg.cc/4471r0R2/suco-de-caixinha.png' },
+            { id: 116, type: 'simple', nome: 'Frutyba 200ml', preco: 2.5, img: 'https://i.postimg.cc/XqCqv47F/Frutyba.png' },
+            {
+                id: 117,
+                type: 'option_only',
+                nome: 'Vitamina de Morango',
+                desc: 'Cremosa, geladinha e perfeita para acompanhar seu almoço com um toque mais indulgente.',
+                img: 'https://i.postimg.cc/Hnw8TX2c/vitamina-de-morango.png',
+                options: [
+                    { label: '200ml', price: 5 },
+                    { label: '300ml', price: 7 },
+                    { label: '400ml', price: 9 },
+                    { label: '500ml', price: 12 }
+                ]
+            }
+        ];
+
+        const desserts = [
+            { id: 201, type: 'simple', nome: 'Mousse de Maracujá', preco: 7, img: 'https://i.postimg.cc/DyGBbMCp/mousse-de-maracuja-Copia.png' },
+            { id: 202, type: 'simple', nome: 'Mousse de Limão', preco: 7, img: 'https://i.postimg.cc/59hm1mxs/mousse-de-limao.png' },
+            { id: 203, type: 'simple', nome: 'Mousse de Morango', preco: 7, img: 'https://i.postimg.cc/G3Wjrjcv/mousse-de-morango.png' },
+            { id: 204, type: 'simple', nome: 'Fatia de Torta de Prestígio', preco: 10, img: 'https://i.postimg.cc/VspKv8Fs/torta-de-prestigio.png' }
+        ];
+
+        let carrinho = [];
+        let isStoreOpen = false;
+        let isAgendamento = false;
+        let currentCategory = 'almoco';
+        let builderState = null;
+
+        function moeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function getTodayMenu() {
+            const day = new Date().getDay();
+            return weeklyMenu[day] || weeklyMenu[1];
+        }
+
+        function getProteinSelectionLimit(item, size) {
+            if (item.type === 'marmita') return size === 'P' || size === 'M' ? 1 : 2;
+            if (item.type === 'combo_custom') return 3;
+            return 1;
+        }
+
+        function getAccompanimentsForItem(item) {
+            if (item.type === 'marmita' || item.type === 'combo_day') return [...getTodayMenu().accompaniments, NO_SIDE];
+            if (item.type === 'combo_custom') return [...piraoConfig.accompaniments, NO_SIDE];
+            return [];
+        }
+
+        function getProteinCardsForItem(item) {
+            if (item.type === 'marmita') return [...getTodayMenu().proteins, NO_PROTEIN];
+            if (item.type === 'combo_custom') return [...piraoConfig.proteins, NO_PROTEIN];
+            return [];
+        }
+
+        function getComboDrinkOptions() {
+            const simpleOptions = drinks.filter((item) => item.type === 'simple').map((item) => ({ key: `drink-${item.id}`, nome: item.nome, preco: item.preco, img: item.img }));
+            const vitaminOptions = drinks.filter((item) => item.type === 'option_only').flatMap((item) => item.options.map((option, index) => ({ key: `drink-${item.id}-${index}`, nome: `${item.nome} ${option.label}`, preco: option.price, img: item.img })));
+            return [...simpleOptions, ...vitaminOptions];
+        }
+
+        function findDrinkOptionByKey(key) {
+            return getComboDrinkOptions().find((item) => item.key === key);
+        }
+
+        function actionLabel() {
+            return isStoreOpen ? 'Adicionar' : 'Agendar pedido';
+        }
+
+        function verificarHorario() {
+            const agora = new Date();
+            const diaSemana = agora.getDay();
+            const hora = agora.getHours();
+            const minuto = agora.getMinutes();
+            const horarioAtual = hora + minuto / 60;
+            const statusTag = document.getElementById('status-loja');
+            const resumo = document.getElementById('resumo-status');
+
+            isStoreOpen = diaSemana >= 1 && diaSemana <= 5 && horarioAtual >= 10 && horarioAtual < 15;
+
+            if (isStoreOpen) {
+                statusTag.innerText = 'Aberta Agora';
+                statusTag.className = 'mt-8 inline-block px-6 py-2 rounded-full border border-white/20 text-xs font-bold uppercase tracking-widest bg-green-500/50 text-white';
+                resumo.innerText = 'Pedidos em atendimento neste momento. Aproveite os combos, os destaques da casa e as sobremesas para montar um pedido ainda melhor.';
+            } else {
+                statusTag.innerText = 'Somente Agendamento';
+                statusTag.className = 'mt-8 inline-block px-6 py-2 rounded-full border border-white/20 text-xs font-bold uppercase tracking-widest bg-amber-500/50 text-white';
+                resumo.innerText = 'Fora do horário de funcionamento, o site recebe apenas pedidos agendados para o próximo atendimento.';
+                document.getElementById('popup-fechado').classList.add('active');
+            }
+        }
+
+        function ativarAgendamento() {
+            isAgendamento = true;
+            document.getElementById('popup-fechado').classList.remove('active');
+            renderCurrentCategory();
+        }
+
+        function alternarCategoria(cat) {
+            currentCategory = cat;
+            renderCurrentCategory();
+        }
+
+        function renderCurrentCategory() {
+            const titulo = document.getElementById('titulo-secao');
+            const subtitulo = document.getElementById('subtitulo-secao');
+            const container = document.getElementById('lista-produtos');
+
+            document.querySelectorAll('nav button').forEach((button) => {
+                button.className = 'bg-white text-gray-400 border border-gray-100 whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold transition-all';
+            });
+
+            if (currentCategory === 'almoco') {
+                document.getElementById('btn-almoco').className = 'bg-pink-700 text-white whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold shadow-lg transition-all';
+                const menu = getTodayMenu();
+                titulo.innerText = menu.dia;
+                subtitulo.innerText = `${menu.subtitulo} Tamanhos: P ${moeda(20)}, M ${moeda(25)}, G ${moeda(28)} e GG ${moeda(32)}.`;
+                container.innerHTML = renderLunchSections(menu);
+                return;
+            }
+
+            if (currentCategory === 'bebidas') {
+                document.getElementById('btn-bebidas').className = 'bg-pink-700 text-white whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold shadow-lg transition-all';
+                titulo.innerText = 'Bebidas';
+                subtitulo.innerText = 'Escolha a bebida ideal para realçar o sabor do seu pedido, refrescar o paladar e deixar a experiência ainda mais gostosa.';
+                container.innerHTML = renderDrinkSections();
+                return;
+            }
+
+            document.getElementById('btn-sobremesas').className = 'bg-pink-700 text-white whitespace-nowrap px-6 py-2 rounded-2xl text-sm font-semibold shadow-lg transition-all';
+            titulo.innerText = 'Sobremesas';
+            subtitulo.innerText = 'Mousses e torta perfeitos para transformar uma refeição boa em uma experiência ainda mais gostosa.';
+            container.innerHTML = renderSimpleGrid(desserts);
+        }
+
+        function renderLunchSections(menu) {
+            const comboItems = menu.proteins.map((protein, index) => ({
+                id: `combo-${index}`,
+                type: 'combo_day',
+                nome: `Combo ${protein.name}`,
+                desc: `Uma combinação prática e muito vantajosa: marmita G ou GG com ${protein.name} e bebida escolhida por você, com desconto automático.`,
+                img: protein.comboImg || protein.img,
+                featuredProtein: protein,
+                badge: '5% OFF'
+            }));
+            const bestSellers = fixedLunchItems.filter((item) => item.id === 'lasanha-casa' || item.id === 'pirao-casa');
+            const customItems = fixedLunchItems.filter((item) => item.id === 'marmita-dia');
+
+            return [
+                renderHorizontalSection('Combos do Dia 🌟', 'Escolhas pensadas para quem quer comer bem, gastar melhor e ainda aproveitar combinações prontas que valorizam sabor, praticidade e desconto.', comboItems, 'combo'),
+                renderHorizontalSection('Os Mais Pedidos 🔥', 'Os campeões de preferência da casa: pratos que conquistam no visual, surpreendem no recheio e costumam ser a aposta certa para quem quer pedir sem erro.', bestSellers, 'best'),
+                renderHorizontalSection('Monte do Seu Jeito 🛠️', 'Aqui o cliente escolhe cada detalhe do prato e sente liberdade para montar uma refeição com a própria cara, cheia de sabor, fartura e personalidade.', customItems, 'custom')
+            ].join('');
+        }
+
+        function renderHorizontalSection(title, description, items, kind) {
+            return `
+                <section class="space-y-3">
+                    <div>
+                        <h4 class="text-base font-black text-gray-900">${title}</h4>
+                        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">${description}</p>
+                    </div>
+                    <div class="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+                        ${items.map((item) => renderLunchCard(item, kind)).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderLunchCard(item, kind) {
+            const badgeColor = kind === 'combo' ? 'bg-emerald-500/90 text-white' : kind === 'best' ? 'bg-pink-600/90 text-white' : 'bg-white/90 text-gray-800';
+            const helper = item.type === 'combo_day'
+                ? item.desc
+                : item.type === 'marmita'
+                    ? 'Escolha os acompanhamentos do dia, defina a proteína e monte uma marmita com a sua cara, do jeito que abre o apetite só de olhar.'
+                    : item.desc;
+            return `
+                <article class="min-w-[280px] max-w-[280px] bg-white rounded-[2rem] border border-pink-50 shadow-sm overflow-hidden">
+                    <div class="h-40 relative bg-cover bg-center" style="background-image: linear-gradient(rgba(15,23,42,0.22), rgba(15,23,42,0.56)), url('${item.img}')">
+                        <span class="absolute top-4 left-4 text-[10px] uppercase tracking-[0.2em] px-3 py-1 rounded-full ${badgeColor}">${item.badge || 'Menu'}</span>
+                    </div>
+                    <div class="p-5">
+                        <h5 class="text-lg font-black text-gray-900">${item.nome}</h5>
+                        <p class="text-[11px] text-gray-500 leading-relaxed mt-2 min-h-[72px]">${helper}</p>
+                        <button onclick="abrirBuilder('${item.id}')" class="mt-4 w-full bg-gray-900 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wide">${actionLabel()}</button>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderSimpleGrid(items) {
+            return items.map((item) => `
+                <article class="bg-white rounded-[2.5rem] p-5 shadow-sm border border-pink-50">
+                    <img src="${item.img}" alt="${item.nome}" class="w-full h-44 rounded-[2rem] object-cover mb-4 shadow-sm">
+                    <h4 class="font-bold text-gray-800 text-lg px-2">${item.nome}</h4>
+                    <p class="text-gray-400 text-[11px] leading-relaxed px-2 mb-4">${item.desc || ''}</p>
+                    ${item.type === 'option_only'
+                        ? `<button onclick="abrirBuilder('${item.id}')" class="w-full bg-gray-900 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wide">${actionLabel()}</button>`
+                        : `<div class="flex justify-between items-center gap-3 px-2"><span class="text-pink-700 font-black italic">${moeda(item.preco)}</span><button onclick="adicionarItemSimples(${item.id})" class="bg-gray-900 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase">${actionLabel()}</button></div>`}
+                </article>
+            `).join('');
+        }
+
+        function renderDrinkSections() {
+            const drinkSections = [
+                {
+                    title: 'Sucos Naturais e Especiais',
+                    subtitle: 'Sabores frescos e vibrantes para quem quer acompanhar a refeição com leveza, cor e aquele toque de fruta que abre ainda mais o apetite.',
+                    items: drinks.filter((item) => [101, 102, 103, 106].includes(item.id))
+                },
+                {
+                    title: 'Detox e Vitaminas Cremosas',
+                    subtitle: 'Opções para quem busca uma bebida mais encorpada, refrescante e com sensação de cuidado, sem abrir mão do prazer de beber algo gostoso.',
+                    items: drinks.filter((item) => [104, 105, 117].includes(item.id))
+                },
+                {
+                    title: 'Refrigerantes para Completar o Pedido',
+                    subtitle: 'Clássicos gelados para harmonizar com pratos mais intensos e deixar o almoço ainda mais redondo, refrescante e satisfatório.',
+                    items: drinks.filter((item) => [107, 108, 109, 110].includes(item.id))
+                },
+                {
+                    title: 'Bebidas Práticas e Queridinhas',
+                    subtitle: 'Versões leves, acessíveis e fáceis de combinar, perfeitas para acrescentar ao pedido sem pensar muito e ainda aumentar o prazer da refeição.',
+                    items: drinks.filter((item) => [111, 112, 113, 114, 115, 116].includes(item.id))
+                }
+            ];
+
+            return drinkSections.map((section) => renderDrinkSection(section.title, section.subtitle, section.items)).join('');
+        }
+
+        function renderDrinkSection(title, subtitle, items) {
+            return `
+                <section class="space-y-4">
+                    <div>
+                        <h4 class="text-base font-black text-gray-900">${title}</h4>
+                        <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">${subtitle}</p>
+                    </div>
+                    <div class="grid gap-4">
+                        ${renderSimpleGrid(items)}
+                    </div>
+                </section>
+            `;
+        }
+
+        function getDynamicCombos() {
+            return getTodayMenu().proteins.map((protein, index) => ({
+                id: `combo-${index}`,
+                type: 'combo_day',
+                nome: `Combo ${protein.name}`,
+                desc: `Marmita G ou GG com ${protein.name} e bebida à sua escolha, com 5% de desconto automático.`,
+                img: protein.comboImg || protein.img,
+                featuredProtein: protein,
+                badge: '5% OFF'
+            }));
+        }
+
+        function encontrarItemPorId(id) {
+            return [...fixedLunchItems, ...getDynamicCombos(), ...drinks, ...desserts].find((item) => item.id == id);
+        }
+
+        function abrirBuilder(id) {
+            const item = encontrarItemPorId(id);
+            if (!item) return;
+
+            builderState = {
+                item,
+                size: null,
+                selectedSides: [],
+                selectedProteins: [],
+                selectedDrink: null,
+                selectedOption: null,
+                notes: '',
+                priceBase: 0,
+                discount: 0,
+                finalPrice: 0,
+                maxProteins: 0
+            };
+
+            document.getElementById('builder-title').innerText = item.nome;
+            document.getElementById('builder-subtitle').innerText = item.type === 'combo_day'
+                ? 'Escolha o tamanho, monte os acompanhamentos e complete o combo com uma bebida para garantir o desconto automático.'
+                : item.desc || 'Personalize seu pedido antes de adicionar à sacola.';
+            document.getElementById('builder-notes').value = '';
+            document.getElementById('builder-submit').innerText = isStoreOpen ? 'Adicionar à sacola' : 'Agendar item';
+            document.getElementById('builder-price').innerText = 'R$ 0,00';
+            document.getElementById('builder-price-help').innerText = '';
+            document.getElementById('builder-hero-wrapper').classList.remove('hidden');
+            document.getElementById('builder-hero').style.backgroundImage = `linear-gradient(rgba(15,23,42,0.18), rgba(15,23,42,0.48)), url('${item.img}')`;
+
+            renderBuilderFixed(item);
+            renderBuilderSizes(item);
+            renderBuilderSides(item);
+            renderBuilderProteins(item);
+            renderBuilderDrinks(item);
+            renderBuilderOptions(item);
+            updateBuilderPrice();
+            document.getElementById('builder-modal').classList.add('active');
+        }
+
+        function renderBuilderFixed(item) {
+            const wrapper = document.getElementById('builder-fixed-wrapper');
+            const content = document.getElementById('builder-fixed-content');
+            if (item.type !== 'combo_day') {
+                wrapper.classList.add('hidden');
+                content.innerHTML = '';
+                return;
+            }
+            wrapper.classList.remove('hidden');
+            content.innerHTML = `
+                <div class="choice-banner active" style="background-image: url('${item.featuredProtein.img}')">
+                    <div class="choice-banner-content p-4 flex h-full items-end">
+                        <div>
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-white/70 font-bold">Proteína selecionada</p>
+                            <p class="text-white font-black text-lg mt-1">${item.featuredProtein.name}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBuilderSizes(item) {
+            const wrapper = document.getElementById('builder-sizes-wrapper');
+            const sizes = document.getElementById('builder-sizes');
+            if (item.type === 'option_only') {
+                wrapper.classList.add('hidden');
+                sizes.innerHTML = '';
+                return;
+            }
+            wrapper.classList.remove('hidden');
+            const allowedSizes = item.type === 'combo_day' ? ['G', 'GG'] : ['P', 'M', 'G', 'GG'];
+            sizes.innerHTML = allowedSizes.map((key) => `
+                <button onclick="selecionarTamanho('${key}')" class="selector-card border border-pink-100 rounded-2xl p-4 text-left transition-all" data-size="${key}">
+                    <span class="block text-xs uppercase tracking-widest text-gray-400 font-bold">Tamanho</span>
+                    <span class="block text-lg font-black text-gray-800 mt-1">${SIZES[key].label}</span>
+                    <span class="block text-sm text-pink-700 font-bold mt-2">${moeda(SIZES[key].price)}</span>
+                </button>
+            `).join('');
+        }
+
+        function renderBuilderSides(item) {
+            const wrapper = document.getElementById('builder-sides-wrapper');
+            const title = document.getElementById('builder-side-title');
+            const help = document.getElementById('builder-side-help');
+            const list = document.getElementById('builder-sides');
+            const options = getAccompanimentsForItem(item);
+
+            if (!options.length) {
+                wrapper.classList.add('hidden');
+                list.innerHTML = '';
+                help.innerText = '';
+                return;
+            }
+
+            wrapper.classList.remove('hidden');
+            title.innerText = item.type === 'combo_custom' ? '2. Acompanhamentos do pirão' : '2. Acompanhamentos do dia';
+            help.innerText = 'Escolha um tamanho para liberar os acompanhamentos';
+            list.innerHTML = options.map((side) => `
+                <button onclick="alternarAcompanhamento('${side.name.replace(/'/g, "&#39;")}')" class="choice-banner disabled w-full text-left" data-side="${side.name}" style="background-image: url('${side.img}')">
+                    <div class="choice-banner-content p-4 flex h-full items-end justify-between gap-3">
+                        <div>
+                            <p class="text-white font-black text-lg leading-tight">${side.name}</p>
+                            <p class="text-white/70 text-[11px] mt-1">Toque para selecionar</p>
+                        </div>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function renderBuilderProteins(item) {
+            const wrapper = document.getElementById('builder-proteins-wrapper');
+            const title = document.getElementById('builder-protein-title');
+            const help = document.getElementById('builder-protein-help');
+            const list = document.getElementById('builder-proteins');
+            const proteins = getProteinCardsForItem(item);
+
+            if (!proteins.length) {
+                wrapper.classList.add('hidden');
+                list.innerHTML = '';
+                help.innerText = '';
+                return;
+            }
+
+            wrapper.classList.remove('hidden');
+            title.innerText = item.type === 'combo_custom' ? '3. Proteínas do pirão' : '3. Proteínas';
+            help.innerText = 'Escolha um tamanho para liberar as proteínas';
+            list.innerHTML = proteins.map((protein) => `
+                <button onclick="alternarProteina('${protein.name.replace(/'/g, "&#39;")}')" class="choice-banner disabled w-full text-left" data-protein="${protein.name}" style="background-image: url('${protein.img}')">
+                    <div class="choice-banner-content p-4 flex h-full items-end justify-between gap-3">
+                        <div>
+                            <p class="text-white font-black text-lg leading-tight">${protein.name}</p>
+                            <p class="text-white/70 text-[11px] mt-1">Toque para selecionar</p>
+                        </div>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function renderBuilderDrinks(item) {
+            const wrapper = document.getElementById('builder-drinks-wrapper');
+            const list = document.getElementById('builder-drinks');
+            if (item.type !== 'combo_day') {
+                wrapper.classList.add('hidden');
+                list.innerHTML = '';
+                return;
+            }
+            wrapper.classList.remove('hidden');
+            list.innerHTML = getComboDrinkOptions().map((drink) => `
+                <button onclick="selecionarBebidaCombo('${drink.key}')" class="selector-card w-full border border-pink-100 rounded-2xl p-4 text-left transition-all" data-drink="${drink.key}">
+                    <div class="flex items-center gap-3">
+                        <img src="${drink.img}" alt="${drink.nome}" class="w-14 h-14 rounded-xl object-cover">
+                        <div>
+                            <span class="block text-sm font-bold text-gray-800">${drink.nome}</span>
+                            <span class="block text-[11px] text-pink-600 mt-1 font-semibold">${moeda(drink.preco)}</span>
+                        </div>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function renderBuilderOptions(item) {
+            const wrapper = document.getElementById('builder-options-wrapper');
+            const list = document.getElementById('builder-options');
+            if (item.type !== 'option_only') {
+                wrapper.classList.add('hidden');
+                list.innerHTML = '';
+                return;
+            }
+            wrapper.classList.remove('hidden');
+            list.innerHTML = item.options.map((option, index) => `
+                <button onclick="selecionarOpcao(${index})" class="selector-card w-full border border-pink-100 rounded-2xl p-4 text-left transition-all">
+                    <span class="block text-sm font-bold text-gray-800">${option.label}</span>
+                    <span class="block text-[11px] text-pink-600 mt-1 font-semibold">${moeda(option.price)}</span>
+                </button>
+            `).join('');
+        }
+
+        function selecionarTamanho(size) {
+            if (!builderState) return;
+            builderState.size = size;
+            builderState.selectedSides = [];
+            builderState.selectedProteins = [];
+            builderState.maxProteins = getProteinSelectionLimit(builderState.item, size);
+
+            document.querySelectorAll('#builder-sizes [data-size]').forEach((button) => {
+                button.classList.toggle('active', button.dataset.size === size);
+            });
+            document.querySelectorAll('#builder-sides [data-side]').forEach((button) => {
+                button.classList.remove('disabled', 'active');
+            });
+            document.querySelectorAll('#builder-proteins [data-protein]').forEach((button) => {
+                button.classList.remove('disabled', 'active');
+            });
+
+            const sideHelp = document.getElementById('builder-side-help');
+            if (!document.getElementById('builder-sides-wrapper').classList.contains('hidden')) {
+                sideHelp.innerText = 'Selecione 1 ou mais acompanhamentos ou escolha sem acompanhamento';
+            }
+            const proteinHelp = document.getElementById('builder-protein-help');
+            if (!document.getElementById('builder-proteins-wrapper').classList.contains('hidden')) {
+                proteinHelp.innerText = builderState.item.type === 'marmita'
+                    ? (builderState.maxProteins === 1 ? 'Selecione 1 proteína ou escolha sem proteína' : 'Selecione até 2 proteínas ou escolha sem proteína')
+                    : 'Selecione 1 ou mais proteínas ou escolha sem proteína';
+            }
+            updateBuilderPrice();
+        }
+
+        function alternarAcompanhamento(sideName) {
+            if (!builderState || !builderState.size) return;
+            const index = builderState.selectedSides.indexOf(sideName);
+            if (index >= 0) {
+                builderState.selectedSides.splice(index, 1);
+            } else if (sideName === 'Sem acompanhamento') {
+                builderState.selectedSides = ['Sem acompanhamento'];
+            } else {
+                builderState.selectedSides = builderState.selectedSides.filter((item) => item !== 'Sem acompanhamento');
+                builderState.selectedSides.push(sideName);
+            }
+            document.querySelectorAll('#builder-sides [data-side]').forEach((button) => {
+                button.classList.toggle('active', builderState.selectedSides.includes(button.dataset.side));
+            });
+        }
+
+        function alternarProteina(proteinName) {
+            if (!builderState || !builderState.size) return;
+            const index = builderState.selectedProteins.indexOf(proteinName);
+            if (index >= 0) {
+                builderState.selectedProteins.splice(index, 1);
+            } else if (proteinName === 'Sem proteína') {
+                builderState.selectedProteins = ['Sem proteína'];
+            } else {
+                builderState.selectedProteins = builderState.selectedProteins.filter((item) => item !== 'Sem proteína');
+                if (builderState.selectedProteins.length >= builderState.maxProteins) {
+                    alert(`Você pode selecionar ${builderState.maxProteins} proteína(s) para este item.`);
+                    return;
+                }
+                builderState.selectedProteins.push(proteinName);
+            }
+            document.querySelectorAll('#builder-proteins [data-protein]').forEach((button) => {
+                button.classList.toggle('active', builderState.selectedProteins.includes(button.dataset.protein));
+            });
+        }
+
+        function selecionarBebidaCombo(key) {
+            if (!builderState) return;
+            builderState.selectedDrink = findDrinkOptionByKey(key);
+            document.querySelectorAll('#builder-drinks [data-drink]').forEach((button) => {
+                button.classList.toggle('active', button.dataset.drink === key);
+            });
+            updateBuilderPrice();
+        }
+
+        function selecionarOpcao(index) {
+            if (!builderState || builderState.item.type !== 'option_only') return;
+            builderState.selectedOption = builderState.item.options[index];
+            document.querySelectorAll('#builder-options .selector-card').forEach((button, buttonIndex) => {
+                button.classList.toggle('active', buttonIndex === index);
+            });
+            updateBuilderPrice();
+        }
+
+        function updateBuilderPrice() {
+            if (!builderState) return;
+            let priceBase = 0;
+            let discount = 0;
+            if (builderState.item.type === 'option_only') {
+                priceBase = builderState.selectedOption ? builderState.selectedOption.price : 0;
+            } else if (builderState.size) {
+                priceBase = SIZES[builderState.size].price;
+                if (builderState.item.type === 'combo_day' && builderState.selectedDrink) {
+                    priceBase += builderState.selectedDrink.preco;
+                    discount = priceBase * 0.05;
+                }
+            }
+            builderState.priceBase = priceBase;
+            builderState.discount = discount;
+            builderState.finalPrice = Math.max(priceBase - discount, 0);
+            document.getElementById('builder-price').innerText = moeda(builderState.finalPrice);
+            document.getElementById('builder-price-help').innerText = discount > 0
+                ? `Subtotal ${moeda(priceBase)} com desconto automático de 5% (${moeda(discount)}).`
+                : (priceBase > 0 ? `Subtotal do item: ${moeda(priceBase)}.` : '');
+        }
+
+        function fecharBuilder() {
+            document.getElementById('builder-modal').classList.remove('active');
+            builderState = null;
+        }
+
+        function confirmarBuilder() {
+            if (!builderState) return;
+            const notes = document.getElementById('builder-notes').value.trim();
+
+            if (builderState.item.type === 'option_only') {
+                if (!builderState.selectedOption) {
+                    alert('Escolha uma opção antes de continuar.');
+                    return;
+                }
+                carrinho.push({
+                    nome: builderState.item.nome,
+                    descricao: `${builderState.item.nome} (${builderState.selectedOption.label})${notes ? ` | Obs.: ${notes}` : ''}`,
+                    precoBase: builderState.selectedOption.price,
+                    desconto: 0,
+                    precoFinal: builderState.selectedOption.price,
+                    tipo: 'bebida'
+                });
+            } else {
+                if (!builderState.size) {
+                    alert('Escolha o tamanho do item.');
+                    return;
+                }
+                if ((builderState.item.type === 'marmita' || builderState.item.type === 'combo_custom' || builderState.item.type === 'combo_day') && builderState.selectedSides.length === 0) {
+                    alert('Selecione pelo menos uma opção de acompanhamento ou escolha sem acompanhamento.');
+                    return;
+                }
+                if ((builderState.item.type === 'marmita' || builderState.item.type === 'combo_custom') && builderState.selectedProteins.length === 0) {
+                    alert('Selecione pelo menos uma proteína ou escolha sem proteína.');
+                    return;
+                }
+                if (builderState.item.type === 'combo_day' && !builderState.selectedDrink) {
+                    alert('Escolha a bebida do combo antes de continuar.');
+                    return;
+                }
+
+                const descriptionParts = [`${builderState.item.nome} (${builderState.size})`];
+                if (builderState.selectedSides.length) descriptionParts.push(`Acompanhamentos: ${builderState.selectedSides.join(', ')}`);
+                if (builderState.item.type === 'combo_day') descriptionParts.push(`Proteína: ${builderState.item.featuredProtein.name}`);
+                if (builderState.selectedProteins.length) descriptionParts.push(`Proteína${builderState.selectedProteins.length > 1 ? 's' : ''}: ${builderState.selectedProteins.join(' + ')}`);
+                if (builderState.selectedDrink) descriptionParts.push(`Bebida: ${builderState.selectedDrink.nome}`);
+                if (notes) descriptionParts.push(`Obs.: ${notes}`);
+
+                carrinho.push({
+                    nome: builderState.item.nome,
+                    descricao: descriptionParts.join(' | '),
+                    precoBase: builderState.priceBase,
+                    desconto: builderState.discount,
+                    precoFinal: builderState.finalPrice,
+                    tipo: builderState.item.type === 'combo_day' ? 'combo' : 'almoco'
+                });
+            }
+
+            atualizarInterface();
+            fecharBuilder();
+        }
+
+        function adicionarItemSimples(id) {
+            const item = encontrarItemPorId(id);
+            if (!item || item.type !== 'simple') return;
+            carrinho.push({
+                nome: item.nome,
+                descricao: item.nome,
+                precoBase: item.preco,
+                desconto: 0,
+                precoFinal: item.preco,
+                tipo: currentCategory === 'sobremesas' ? 'sobremesa' : 'item'
+            });
+            atualizarInterface();
+        }
+
+        function getCartTotals() {
+            const subtotal = carrinho.reduce((acc, item) => acc + item.precoBase, 0);
+            const desconto = carrinho.reduce((acc, item) => acc + (item.desconto || 0), 0);
+            const total = carrinho.reduce((acc, item) => acc + item.precoFinal, 0);
+            return { subtotal, desconto, total };
+        }
+
+        function getRandomDessertSuggestions() {
+            return desserts.slice(0, 3);
+        }
+
+        function renderCartSuggestions() {
+            const suggestions = getRandomDessertSuggestions();
+            document.getElementById('cart-suggestions').innerHTML = suggestions.map((item) => `
+                <div class="min-w-[160px] bg-gray-50 rounded-2xl p-3 border border-pink-50">
+                    <img src="${item.img}" alt="${item.nome}" class="w-full h-20 rounded-xl object-cover mb-3">
+                    <p class="text-sm font-bold text-gray-800 leading-tight min-h-[38px]">${item.nome}</p>
+                    <div class="flex items-center justify-between mt-3 gap-2">
+                        <span class="text-pink-700 font-black text-sm">${moeda(item.preco)}</span>
+                        <button onclick="adicionarItemSimples(${item.id})" class="w-8 h-8 rounded-xl bg-gray-900 text-white font-bold">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function atualizarInterface() {
+            const bar = document.getElementById('cart-bar');
+            const itemsContainer = document.getElementById('cart-items');
+            const totals = getCartTotals();
+
+            document.getElementById('cart-count').innerText = carrinho.length;
+            document.getElementById('cart-total-bar').innerText = moeda(totals.total);
+            document.getElementById('cart-subtotal').innerText = moeda(totals.subtotal);
+            document.getElementById('cart-discount').innerText = `- ${moeda(totals.desconto)}`;
+            document.getElementById('cart-total-modal').innerText = moeda(totals.total);
+
+            if (carrinho.length > 0) bar.classList.remove('hidden');
+            else bar.classList.add('hidden');
+
+            itemsContainer.innerHTML = carrinho.length
+                ? carrinho.map((item, index) => `
+                    <div class="bg-gray-50 p-4 rounded-2xl border border-pink-50">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-bold text-gray-700">${item.nome}</p>
+                                <p class="text-[11px] text-gray-400 mt-1 leading-relaxed">${item.descricao}</p>
+                                ${item.desconto > 0 ? `<p class="text-[11px] text-emerald-600 font-semibold mt-2">Desconto aplicado: ${moeda(item.desconto)}</p>` : ''}
+                            </div>
+                            <div class="text-right shrink-0">
+                                ${item.desconto > 0 ? `<p class="text-[11px] text-gray-400 line-through">${moeda(item.precoBase)}</p>` : ''}
+                                <p class="text-pink-700 font-bold text-sm">${moeda(item.precoFinal)}</p>
+                                <button onclick="remover(${index})" class="text-gray-300 text-xs mt-2">Remover</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')
+                : '<div class="bg-gray-50 p-5 rounded-2xl text-sm text-gray-400 text-center">Sua sacola está vazia no momento.</div>';
+
+            renderCartSuggestions();
+        }
+
+        function remover(index) {
+            carrinho.splice(index, 1);
+            atualizarInterface();
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-modal').classList.toggle('active');
+            atualizarInterface();
+        }
+
+        function montarMensagemPedido(nome, endereco, pagamento) {
+            const totals = getCartTotals();
+            const cabecalho = isStoreOpen ? '*NOVO PEDIDO*' : '*SOLICITAÇÃO DE AGENDAMENTO*';
+            let mensagem = `${cabecalho}\n`;
+            mensagem += `Cliente: ${nome}\n`;
+            mensagem += `Endereço: ${endereco}\n`;
+            mensagem += `Pagamento: ${pagamento}\n`;
+            mensagem += `Cardápio do dia: ${getTodayMenu().dia}\n\n`;
+            mensagem += '*ITENS DO PEDIDO*\n';
+            carrinho.forEach((item, index) => {
+                mensagem += `${index + 1}. ${item.descricao} - ${moeda(item.precoFinal)}\n`;
+            });
+            mensagem += `\nSubtotal: ${moeda(totals.subtotal)}\n`;
+            mensagem += `Descontos: ${moeda(totals.desconto)}\n`;
+            mensagem += `*TOTAL: ${moeda(totals.total)}*`;
+            return mensagem;
+        }
+
+        function enviarPedido() {
+            const nome = document.getElementById('nome').value.trim();
+            const endereco = document.getElementById('endereco').value.trim();
+            const pagamento = document.getElementById('pagamento').value;
+            if (!carrinho.length) {
+                alert('Adicione ao menos um item na sacola antes de finalizar.');
+                return;
+            }
+            if (!nome || !endereco) {
+                alert('Preencha seu nome e endereço para continuar.');
+                return;
+            }
+            const mensagem = montarMensagemPedido(nome, endereco, pagamento);
+            window.location.href = `https://api.whatsapp.com/send?phone=${FONE_WHATSAPP}&text=${encodeURIComponent(mensagem)}`;
+        }
+
+        verificarHorario();
+        atualizarInterface();
+        alternarCategoria('almoco');
+    </script>
+</body>
+</html>
