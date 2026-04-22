@@ -250,28 +250,27 @@
         const NO_SIDE = { name: 'Sem acompanhamento', img: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=900&fit=crop' };
         const NO_PROTEIN = { name: 'Sem proteína', img: 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=900&fit=crop' };
 
-        // Integração total dos recursos visuais e divisão do Feijão
         const accompanimentImages = {
-            arroz: 'https://i.postimg.cc/43NJdM6L/arroz.png',
-            feijao_tropeiro: 'https://i.postimg.cc/7h3tQjwt/Feijao-tropeiro.png',
-            feijao_caldo: 'https://i.postimg.cc/rs1ZY7Mh/feijao-de-caldo.png',
-            macarrao: 'https://i.postimg.cc/Xv7VJhK3/macarrao.png',
-            farofa: 'https://i.postimg.cc/FKWhJZpB/farofa.png',
-            farofa_bacon: 'https://i.postimg.cc/FKWhJZpB/farofa.png', 
-            salada_verde: 'https://i.postimg.cc/wxJd6gKz/salada.png',
-            banana_frita: 'https://i.postimg.cc/mrXTFwVL/banana-frita.png',
-            salada_vinagrete: 'https://i.postimg.cc/wxJd6gKz/salada.png',
-            farofa_cenoura: 'https://i.postimg.cc/jqZFN4W1/farofa-de-cenoura.png',
-            salada_verduras: 'https://i.postimg.cc/x8xp29DC/salada-de-verduras.png',
-            pure_batata: 'https://i.postimg.cc/XNQzFkZz/pure-de-batata.png',
-            quiabada: 'https://i.postimg.cc/7PmW7nC9/quiabada.png',
-            salada_repolho: 'https://i.postimg.cc/6qjbXBJX/salada-de-repolho-florida.png',
-            caruru: 'https://i.postimg.cc/DZcYxqxd/caruru.png',
-            vatapa: 'https://i.postimg.cc/W37f5M5G/vatapa.png',
-            salada: 'https://i.postimg.cc/tTvGY4qH/salada-do-pirao-de-aipim.png', 
-            feijoada: 'https://i.postimg.cc/85bnZhZd/feijoada.png',
-            batata_palha: 'https://i.postimg.cc/XqX38yH2/batata-palha.png',
-            molho_barbecue: 'https://i.postimg.cc/VLdL922Y/molho-babebue.png'
+            arroz: './img/arroz.png',
+            feijao_tropeiro: './img/Feijão tropeiro.png',
+            feijao_caldo: './img/feijão de caldo.png',
+            macarrao: './img/macarrão.png',
+            farofa: './img/farofa.png',
+            farofa_bacon: './img/farofa.png', 
+            salada_verde: './img/salada.png',
+            banana_frita: './img/banana frita.png',
+            salada_vinagrete: './img/salada.png',
+            farofa_cenoura: './img/farofa de cenoura.png',
+            salada_verduras: './img/salada de verduras.png',
+            pure_batata: './img/purê de batata.png',
+            quiabada: './img/quiabada.png',
+            salada_repolho: './img/salada de repolho florida.png',
+            caruru: './img/caruru.png',
+            vatapa: './img/vatapá.png',
+            salada: './img/salada do pirão de aipim.png', 
+            feijoada: './img/feijoada.png',
+            batata_palha: './img/batata palha.png',
+            molho_barbecue: './img/molho babebue.png'
         };
 
         const weeklyMenu = {
@@ -288,8 +287,8 @@
                     { name: 'Banana frita', img: accompanimentImages.banana_frita }
                 ],
                 proteins: [
-                    { name: 'Bisteca', img: 'https://i.postimg.cc/C1Tf9wTH/bisteca-bovina.png', comboImg: 'https://i.postimg.cc/Y9CwrWHS/combo-bisteca-bovina-segunda.png' },
-                    { name: 'Carne de panela', img: 'https://i.postimg.cc/2863c1bP/carne-de-panela.png', comboImg: 'https://i.postimg.cc/HxkCYyC6/combo-carne-de-panela-segunda.png' }
+                    { name: 'Bisteca', img: './img/bisteca bovina.png', comboImg: './img/combo bisteca bovina segunda.png' },
+                    { name: 'Carne de panela', img: './img/carne de panela.png', comboImg: './img/combo carne de panela segunda.png' }
                 ],
                 lunchName: 'Marmita de Segunda'
             },
@@ -305,8 +304,8 @@
                     { name: 'Salada de vinagrete', img: accompanimentImages.salada_vinagrete }
                 ],
                 proteins: [
-                    { name: 'Churrasco', img: 'https://i.postimg.cc/tJ3vm8pS/churrasco-terca.png', comboImg: 'https://i.postimg.cc/J06YLRVs/combo-churrasco-terca.png' },
-                    { name: 'Peixe frito', img: 'https://i.postimg.cc/qBj5nxh4/Peixe-frito-terca.png', comboImg: 'https://i.postimg.cc/nV0P7Gsv/Combo-peixe-frito-terca.png' }
+                    { name: 'Churrasco', img: './img/churrasco terça.png', comboImg: './img/combo churrasco terça.png' },
+                    { name: 'Peixe frito', img: './img/Peixe frito terça.png', comboImg: './img/Combo peixe frito terça.png' }
                 ],
                 lunchName: 'Marmita de Terça'
             },
@@ -324,8 +323,8 @@
                     { name: 'Quiabada completa', img: accompanimentImages.quiabada }
                 ],
                 proteins: [
-                    { name: 'Panqueca de carne', img: 'https://i.postimg.cc/gcNTRHXb/panqueca-de-carne-quarta.png', comboImg: 'https://i.postimg.cc/0jWXs9Ry/combo-panqueca-de-carne-quarta.png' },
-                    { name: 'Filé de frango à parmegiana', img: 'https://i.postimg.cc/v83N9tgR/file-de-frango-a-parmegiana-quarta.png', comboImg: 'https://i.postimg.cc/vTq2sGF8/combo-file-de-frango-a-parmegiana-quarta.png' }
+                    { name: 'Panqueca de carne', img: './img/panqueca de carne quarta.png', comboImg: './img/combo panqueca de carne quarta.png' },
+                    { name: 'Filé de frango à parmegiana', img: './img/filé de frango à parmegiana quarta.png', comboImg: './img/combo filé de frango à parmegiana quarta.png' }
                 ],
                 lunchName: 'Marmita de Quarta'
             },
@@ -342,9 +341,9 @@
                     { name: 'Banana frita', img: accompanimentImages.banana_frita }
                 ],
                 proteins: [
-                    { name: 'Estrogonofe de carne', img: 'https://i.postimg.cc/6qjbXBJs/estrogonoff-de-carne.png', comboImg: 'https://i.postimg.cc/kG1Ym73J/combo-estrogonofe-de-carne-quinta.png' },
-                    { name: 'Executivo de frango', img: 'https://i.postimg.cc/1XC7Qyhh/executivo-de-frango-quinta.png', comboImg: 'https://i.postimg.cc/WzWYvsLs/combo-executivo-de-frango-quinta.png' },
-                    { name: 'Maminha', img: 'https://i.postimg.cc/908ghc5H/maminha-quuinta.png', comboImg: 'https://i.postimg.cc/L5CQpmK2/combo-maminha-quinta.png' }
+                    { name: 'Estrogonofe de carne', img: './img/estrogonoff de carne.png', comboImg: './img/combo estrogonofe de carne quinta.png' },
+                    { name: 'Executivo de frango', img: './img/executivo de frango quinta.png', comboImg: './img/combo executivo de frango quinta.png' },
+                    { name: 'Maminha', img: './img/maminha quuinta.png', comboImg: './img/combo maminha quinta.png' }
                 ],
                 lunchName: 'Marmita de Quinta'
             },
@@ -359,10 +358,10 @@
                     { name: 'Feijoada', img: accompanimentImages.feijoada }
                 ],
                 proteins: [
-                    { name: 'Moqueca de peixe', img: 'https://i.postimg.cc/rsFZ3Kb2/moqueca-de-peixe-sexta.png', comboImg: 'https://i.postimg.cc/Kjqp2mXC/combo-moqueca-de-peixe-sexta.png' },
-                    { name: 'Xinxim de frango', img: 'https://i.postimg.cc/gjktQn71/xinxim-de-frango-sexta.png', comboImg: 'https://i.postimg.cc/PJrV9P7B/combo-xinxim-de-frango.png' },
-                    { name: 'Frango assado', img: 'https://i.postimg.cc/d3tNpLf4/frango-assado-sexta.png', comboImg: 'https://i.postimg.cc/ZnKs2CQ7/combo-frango-assado-sexta.png' },
-                    { name: 'Bobó de camarão', img: 'https://i.postimg.cc/PJrV9P7M/bobo-de-camarao-sexta.png', comboImg: 'https://i.postimg.cc/PxMFSmS1/combo-bobo-de-camarao.png' }
+                    { name: 'Moqueca de peixe', img: './img/moqueca de peixe sexta.png', comboImg: './img/combo moqueca de peixe sexta.png' },
+                    { name: 'Xinxim de frango', img: './img/xinxim de frango sexta.png', comboImg: './img/combo xinxim de frango.png' },
+                    { name: 'Frango assado', img: './img/frango assado sexta.png', comboImg: './img/combo frango assado sexta.png' },
+                    { name: 'Bobó de camarão', img: './img/bobo de camarão sexta.png', comboImg: './img/combo bobo de camarão.png' }
                 ],
                 lunchName: 'Marmita de Sexta'
             }
@@ -375,8 +374,8 @@
                 { name: 'Molho barbecue', img: accompanimentImages.molho_barbecue }
             ],
             proteins: [
-                { name: 'Calabresa', img: 'https://i.postimg.cc/c6q7mf1Z/calabresa-do-pirao-de-aipim.png' },
-                { name: 'Frango', img: 'https://i.postimg.cc/rm1tk7MS/frango-do-pirao-de-aipim.png' },
+                { name: 'Calabresa', img: './img/calabresa do pirão de aipim.png' },
+                { name: 'Frango', img: './img/frango do pirão de aipim.png' },
                 { name: 'Camarão', img: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=900&fit=crop' } 
             ]
         };
@@ -387,7 +386,7 @@
                 type: 'marmita',
                 nome: 'Marmita do Dia',
                 desc: 'Um almoço completo, montado do seu jeito, com acompanhamentos apetitosos e proteínas cheias de sabor para transformar sua refeição em algo realmente satisfatório.',
-                img: 'https://i.postimg.cc/nr49nBk2/Monte-do-seu-jeito-Segunda.jpg',
+                img: './img/Monte do seu jeito Segunda.jpg',
                 badge: 'Monte do seu jeito'
             },
             {
@@ -403,34 +402,34 @@
                 type: 'combo_custom',
                 nome: 'Pirão de Aipim',
                 desc: 'Cremoso, bem servido e cheio de personalidade, o pirão permite combinações irresistíveis para quem quer um prato marcante, saboroso e caprichado.',
-                img: 'https://i.postimg.cc/sxWHsjvX/pirao-de-aipim.png',
+                img: './img/pirão de aipim.png',
                 badge: 'Mais pedido'
             }
         ];
 
         const drinks = [
-            { id: 101, type: 'simple', nome: 'Suco de Laranja na Hora 500ml', preco: 7, img: 'https://i.postimg.cc/FRkXkQ7x/suco-de-laranja-com-cenoura.png' }, 
-            { id: 102, type: 'simple', nome: 'Suco de Laranja com Cenoura 500ml', preco: 8, img: 'https://i.postimg.cc/FRkXkQ7x/suco-de-laranja-com-cenoura.png' },
-            { id: 103, type: 'simple', nome: 'Suco de Limão e Beterraba 500ml', preco: 10, img: 'https://i.postimg.cc/sgm6V0DV/suco-de-limao-com-beterraba.png' },
-            { id: 104, type: 'simple', nome: 'Detox de Limão 500ml', preco: 13, img: 'https://i.postimg.cc/7hQzs0qQ/detox-de-limao.png' },
-            { id: 105, type: 'simple', nome: 'Detox de Limão com Gengibre e Hortelã 500ml', preco: 15, img: 'https://i.postimg.cc/kGhS1K7H/detox-de-limao-com-gengibre-e-hortela.png' },
-            { id: 106, type: 'simple', nome: 'Suco de Maracujá 500ml', preco: 8, img: 'https://i.postimg.cc/ncSzmnzx/Suco-de-maracuja.png' }, 
-            { id: 107, type: 'simple', nome: 'Água Tônica 350ml', preco: 6, img: 'https://i.postimg.cc/dtRGFPHn/agua-tonica.png' },
-            { id: 108, type: 'simple', nome: 'Coca-Cola 1L', preco: 8, img: 'https://i.postimg.cc/T1MW8Crp/coca-cola-1L.png' },
-            { id: 109, type: 'simple', nome: 'Pepsi 1L', preco: 7, img: 'https://i.postimg.cc/C1ff6WnJ/Pepsi-1L.png' },
-            { id: 110, type: 'simple', nome: 'Antártica 1L', preco: 7, img: 'https://i.postimg.cc/fbydY3z3/guarana-1L.png' },
-            { id: 111, type: 'simple', nome: 'Juninho Pepsi 200ml', preco: 2.5, img: 'https://i.postimg.cc/HWyQS7Q8/juninho-pepsi.png' },
-            { id: 112, type: 'simple', nome: 'Juninho Limão 200ml', preco: 2.5, img: 'https://i.postimg.cc/wxmhWsDS/juninho-limao.png' },
-            { id: 113, type: 'simple', nome: 'Juninho Guaraná 200ml', preco: 2.5, img: 'https://i.postimg.cc/k4VxP2zy/juninho-guarana.png' },
-            { id: 114, type: 'simple', nome: 'Tubaína Tutti Frutti 300ml', preco: 3, img: 'https://i.postimg.cc/XNRg3gVJ/tubaina.png' },
-            { id: 115, type: 'simple', nome: 'Suco de Caixinha 200ml', preco: 3, desc: 'Consulte os sabores disponíveis no WhatsApp ao finalizar o pedido.', img: 'https://i.postimg.cc/4471r0R2/suco-de-caixinha.png' },
-            { id: 116, type: 'simple', nome: 'Frutyba 200ml', preco: 2.5, img: 'https://i.postimg.cc/XqCqv47F/Frutyba.png' },
+            { id: 101, type: 'simple', nome: 'Suco de Laranja na Hora 500ml', preco: 7, img: './img/suco de laranja com cenoura.png' }, 
+            { id: 102, type: 'simple', nome: 'Suco de Laranja com Cenoura 500ml', preco: 8, img: './img/suco de laranja com cenoura.png' },
+            { id: 103, type: 'simple', nome: 'Suco de Limão e Beterraba 500ml', preco: 10, img: './img/suco de limão com beterraba.png' },
+            { id: 104, type: 'simple', nome: 'Detox de Limão 500ml', preco: 13, img: './img/detox de limão.png' },
+            { id: 105, type: 'simple', nome: 'Detox de Limão com Gengibre e Hortelã 500ml', preco: 15, img: './img/detox de limão com gengibre e hortelã.png' },
+            { id: 106, type: 'simple', nome: 'Suco de Maracujá 500ml', preco: 8, img: './img/Suco de maracujá.png' }, 
+            { id: 107, type: 'simple', nome: 'Água Tônica 350ml', preco: 6, img: './img/agua tonica.png' },
+            { id: 108, type: 'simple', nome: 'Coca-Cola 1L', preco: 8, img: './img/coca cola 1L.png' },
+            { id: 109, type: 'simple', nome: 'Pepsi 1L', preco: 7, img: './img/Pepsi 1L.png' },
+            { id: 110, type: 'simple', nome: 'Antártica 1L', preco: 7, img: './img/guarana 1L.png' },
+            { id: 111, type: 'simple', nome: 'Juninho Pepsi 200ml', preco: 2.5, img: './img/juninho pepsi.png' },
+            { id: 112, type: 'simple', nome: 'Juninho Limão 200ml', preco: 2.5, img: './img/juninho limão.png' },
+            { id: 113, type: 'simple', nome: 'Juninho Guaraná 200ml', preco: 2.5, img: './img/juninho guarana.png' },
+            { id: 114, type: 'simple', nome: 'Tubaína Tutti Frutti 300ml', preco: 3, img: './img/tubaina.png' },
+            { id: 115, type: 'simple', nome: 'Suco de Caixinha 200ml', preco: 3, desc: 'Consulte os sabores disponíveis no WhatsApp ao finalizar o pedido.', img: './img/suco de caixinha.png' },
+            { id: 116, type: 'simple', nome: 'Frutyba 200ml', preco: 2.5, img: './img/Frutyba.png' },
             {
                 id: 117,
                 type: 'option_only',
                 nome: 'Vitamina de Morango',
                 desc: 'Cremosa, geladinha e perfeita para acompanhar seu almoço com um toque mais indulgente.',
-                img: 'https://i.postimg.cc/Hnw8TX2c/vitamina-de-morango.png',
+                img: './img/vitamina de morango.png',
                 options: [
                     { label: '200ml', price: 5 },
                     { label: '300ml', price: 7 },
@@ -441,10 +440,10 @@
         ];
 
         const desserts = [
-            { id: 201, type: 'simple', nome: 'Mousse de Maracujá', preco: 7, img: 'https://i.postimg.cc/DyGBbMCp/mousse-de-maracuja-Copia.png' },
-            { id: 202, type: 'simple', nome: 'Mousse de Limão', preco: 7, img: 'https://i.postimg.cc/59hm1mxs/mousse-de-limao.png' },
-            { id: 203, type: 'simple', nome: 'Mousse de Morango', preco: 7, img: 'https://i.postimg.cc/G3Wjrjcv/mousse-de-morango.png' },
-            { id: 204, type: 'simple', nome: 'Fatia de Torta de Prestígio', preco: 10, img: 'https://i.postimg.cc/VspKv8Fs/torta-de-prestigio.png' }
+            { id: 201, type: 'simple', nome: 'Mousse de Maracujá', preco: 7, img: './img/mousse de maracuja.png' },
+            { id: 202, type: 'simple', nome: 'Mousse de Limão', preco: 7, img: './img/mousse de limão.png' },
+            { id: 203, type: 'simple', nome: 'Mousse de Morango', preco: 7, img: './img/mousse de morango.png' },
+            { id: 204, type: 'simple', nome: 'Fatia de Torta de Prestígio', preco: 10, img: './img/torta de prestigio.png' }
         ];
 
         let carrinho = [];
